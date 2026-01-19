@@ -100,7 +100,7 @@ const Contact = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="text-xl md:text-2xl text-white/90 leading-relaxed max-w-3xl mx-auto"
+              className="text-xl md:text-2xl text-white/90 leading-relaxed max-w-3xl mx-auto mb-8"
             >
               Ready to start your project? Fill out the form below or give us a call for a free estimate
             </motion.p>

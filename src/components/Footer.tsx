@@ -84,7 +84,9 @@ const Footer = () => {
                 <Facebook className="h-5 w-5 group-hover:scale-110 transition-transform" />
               </a>
               <a
-                href="#"
+                href="https://www.instagram.com/Onestoppropertyus"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-12 h-12 bg-secondary/20 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-accent hover:scale-110 transition-all shadow-md group"
                 aria-label="Instagram"
               >
@@ -195,13 +197,13 @@ const Footer = () => {
               © {currentYear} One Stop Property Solutions. All rights reserved.
             </p>
             <div className="flex flex-wrap justify-center gap-6 text-sm">
-              <a href="#" className="text-primary-foreground/70 hover:text-accent transition-colors">
+              <Link to="/privacy-policy" className="text-primary-foreground/70 hover:text-accent transition-colors">
                 Privacy Policy
-              </a>
+              </Link>
               <span className="text-primary-foreground/30">•</span>
-              <a href="#" className="text-primary-foreground/70 hover:text-accent transition-colors">
-                Terms of Service
-              </a>
+              <Link to="/terms-of-use" className="text-primary-foreground/70 hover:text-accent transition-colors">
+                Terms of Use
+              </Link>
               <span className="text-primary-foreground/30">•</span>
               <span className="text-primary-foreground/70">
                 Made with care in Arkansas

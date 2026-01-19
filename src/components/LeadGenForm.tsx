@@ -97,58 +97,118 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
         promoCode: promoCodeValue || undefined,
         submittedAt: new Date().toISOString(),
       };
-      
-      // Send to webhook
+
+      // Track submission results
+      const results = { telegram: false, webhook: false };
+      const errors: string[] = [];
+
+      // 1. Send to Telegram Bot
+      const telegramBotToken = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
+      const telegramChatId = import.meta.env.VITE_TELEGRAM_CHAT_ID;
+
+      if (telegramBotToken && telegramChatId) {
+        try {
+          // Format message for Telegram
+          const telegramMessage = `
+🏠 *New Contact Form Submission*
+
+👤 *Name:* ${submissionData.name}
+📧 *Email:* ${submissionData.email}
+📞 *Phone:* ${submissionData.phone}
+🏢 *Property Type:* ${submissionData.propertyType || 'Not specified'}
+🔧 *Service Needed:* ${submissionData.serviceNeeded?.join(', ') || 'Not specified'}
+📝 *Description:* ${submissionData.description}
+💬 *Preferred Contact:* ${submissionData.preferredContact || 'Not specified'}
+⏰ *Best Time to Reach:* ${submissionData.bestTimeToReach || 'Not specified'}
+${submissionData.promoCode ? `🎁 *Promo Code:* ${submissionData.promoCode}` : ''}
+📅 *Submitted:* ${new Date(submissionData.submittedAt).toLocaleString()}
+          `.trim();
+
+          const telegramResponse = await fetch(
+            `https://api.telegram.org/bot${telegramBotToken}/sendMessage`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                chat_id: telegramChatId,
+                text: telegramMessage,
+                parse_mode: 'Markdown',
+              }),
+            }
+          );
+
+          if (telegramResponse.ok) {
+            results.telegram = true;
+          } else {
+            const telegramError = await telegramResponse.text();
+            console.error('Telegram error:', telegramError);
+            errors.push('Telegram notification failed');
+          }
+        } catch (telegramErr) {
+          console.error('Telegram send error:', telegramErr);
+          errors.push('Telegram notification failed');
+        }
+      }
+
+      // 2. Send to webhook for Excel/Sheets
       let webhookUrl = import.meta.env.VITE_FORM_WEBHOOK;
       const apiKey = import.meta.env.VITE_FORM_API_KEY;
       
-      if (!webhookUrl) {
-        throw new Error('Form webhook URL is not configured');
+      if (webhookUrl) {
+        try {
+          const headers: Record<string, string> = {
+            'Content-Type': 'application/json',
+          };
+
+          // Add API key for Make.com compatibility
+          if (apiKey) {
+            headers['x-make-apikey'] = apiKey;
+            const url = new URL(webhookUrl);
+            url.searchParams.append('apikey', apiKey);
+            webhookUrl = url.toString();
+          }
+
+          const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(submissionData),
+          });
+
+          if (response.ok) {
+            results.webhook = true;
+          } else {
+            console.error('Webhook error:', response.statusText);
+            errors.push('Webhook submission failed');
+          }
+        } catch (webhookErr) {
+          console.error('Webhook send error:', webhookErr);
+          errors.push('Webhook submission failed');
+        }
       }
 
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
+      // Check if at least one submission method succeeded
+      if (results.telegram || results.webhook) {
+        toast({
+          title: 'Message sent successfully!',
+          description: "We'll get back to you within 1 hour.",
+        });
 
-      // Add API key - Make.com can use either header or query parameter
-      if (apiKey) {
-        // Try as header first
-        headers['x-make-apikey'] = apiKey;
-        
-        // Also add as query parameter for Make.com compatibility
-        const url = new URL(webhookUrl);
-        url.searchParams.append('apikey', apiKey);
-        webhookUrl = url.toString();
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          propertyType: undefined,
+          serviceNeeded: [],
+          description: '',
+          preferredContact: 'phone',
+          bestTimeToReach: '',
+        });
+        setPromoCodeValue('');
+        setPreferredDate('');
+        setPreferredTime('');
+      } else {
+        throw new Error('Unable to send message. Please try again or contact us directly.');
       }
-
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(submissionData),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Webhook error: ${response.statusText}`);
-      }
-
-      toast({
-        title: 'Message sent successfully!',
-        description: "We'll get back to you within 1 hour.",
-      });
-
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        propertyType: undefined,
-        serviceNeeded: [],
-        description: '',
-        preferredContact: 'phone',
-        bestTimeToReach: '',
-      });
-      setPromoCodeValue('');
-      setPreferredDate('');
-      setPreferredTime('');
     } catch (error: any) {
       if (error.errors) {
         const fieldErrors: Record<string, string> = {};

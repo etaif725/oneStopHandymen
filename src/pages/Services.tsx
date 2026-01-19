@@ -230,7 +230,7 @@ const Services = () => {
       icon: PaintBucket,
       title: 'Garage Door Painting',
       description:
-        'Give your home a fresh, modern look with a professionally painted garage door. We use durable, weather-resistant paints that protect against sun, rain, and rust – keeping your home looking new and well-maintained. You can choose any color or finish you like to perfectly match your home\'s style.',
+        'Give your home a fresh, modern look with a professionally painted garage door. We use durable, weather-resistant paints that protect against sun, rain, and rust, keeping your home looking new and well-maintained. You can choose any color or finish you like to perfectly match your home\'s style.',
       features: [
         'Professional surface preparation',
         'Weather-resistant paints',
@@ -262,7 +262,7 @@ const Services = () => {
       icon: Video,
       title: 'Virtual Consultation & Personalized Project Packages',
       description:
-        'Not every client can be on-site — and that\'s perfectly fine. Our Virtual Consultation service allows clients, whether local or out-of-state, to receive the same dedicated support and project oversight as if they were right here with us.',
+        'Not every client can be on-site, and that\'s perfectly fine. Our Virtual Consultation service allows clients, whether local or out-of-state, to receive the same dedicated support and project oversight as if they were right here with us.',
       features: [
         'Detailed video consultations',
         'Custom service packages',
@@ -366,76 +366,73 @@ const Services = () => {
             </p>
           </motion.div>
 
-          <div className="space-y-8">
+          <div className="space-y-6 max-w-4xl mx-auto">
             {services.map((service, index) => (
               <motion.div
                 key={service.title}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.5, delay: index * 0.05 }}
               >
-                <Card className="overflow-hidden border-2 hover:border-primary/30 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
-                  <CardContent className="p-0">
-                    <div className={`grid ${index % 2 === 0 ? 'md:grid-cols-[1fr,1.2fr]' : 'md:grid-cols-[1.2fr,1fr]'} gap-0`}>
-                      {/* Content Side */}
-                      <div className={`p-8 md:p-10 flex flex-col justify-center ${index % 2 === 0 ? 'order-1' : 'order-2'}`}>
-                        {/* Icon Badge */}
-                        <div className={`${service.bgColor} w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all`}>
-                          <service.icon className={`h-10 w-10 ${service.color}`} />
-                        </div>
-
-                        <h2 className="font-heading font-bold text-3xl md:text-4xl mb-4 text-foreground group-hover:text-primary transition-colors">
+                <Card className="overflow-hidden border-2 hover:border-primary/30 hover:shadow-xl transition-all duration-300 group">
+                  <CardContent className="p-6 md:p-8">
+                    {/* Header with Icon and Title */}
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className={`${service.bgColor} w-14 h-14 rounded-xl flex items-center justify-center shadow-md group-hover:scale-105 transition-all flex-shrink-0`}>
+                        <service.icon className={`h-7 w-7 ${service.color}`} />
+                      </div>
+                      <div className="flex-1">
+                        <h2 className="font-heading font-bold text-2xl md:text-3xl text-foreground group-hover:text-primary transition-colors">
                           {service.title}
                         </h2>
-                        <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-                          {service.description}
-                        </p>
-                        
-                        <div className="flex flex-wrap gap-3">
-                        <Link to="/contact">
-                          <Button
-                            size="lg"
-                              className="gradient-accent hover:scale-105 shadow-lg hover:shadow-accent/50 transition-all font-semibold rounded-xl"
-                          >
-                            Request Quote
-                              <ArrowRight className="ml-2 h-4 w-4" />
-                          </Button>
-                        </Link>
-                          <a href="tel:5017370930">
-                            <Button
-                              size="lg"
-                              variant="outline"
-                              className="hover:bg-primary/5 hover:text-black hover:scale-105 transition-all font-semibold rounded-xl border-2"
-                            >
-                              <Phone className="mr-2 h-4 w-4" />
-                              Call Now
-                            </Button>
-                          </a>
-                        </div>
                       </div>
+                    </div>
 
-                      {/* Features Side */}
-                      <div className={`p-8 md:p-10 bg-gradient-to-br from-muted/30 to-muted/10 flex flex-col justify-center ${index % 2 === 0 ? 'order-2' : 'order-1'}`}>
-                        <h3 className="font-bold text-lg text-foreground mb-6">
-                          What's Included
-                        </h3>
-                        <ul className="space-y-3">
-                          {service.features.map((feature) => (
-                            <li
-                              key={feature}
-                              className="flex items-start gap-3 group/item"
-                            >
-                              <div className="bg-accent/20 p-1 rounded-full mt-0.5 flex-shrink-0">
-                                <CheckCircle2 className={`h-5 w-5 ${service.color} group-hover/item:scale-110 transition-transform`} />
-                              </div>
-                              <span className="text-foreground/80 group-hover/item:text-foreground transition-colors leading-relaxed">
-                                {feature}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
+                    {/* Description */}
+                    <p className="text-muted-foreground mb-6 leading-relaxed">
+                      {service.description}
+                    </p>
+
+                    {/* Features Grid */}
+                    <div className="mb-6">
+                      <h3 className="font-semibold text-sm text-foreground mb-3 uppercase tracking-wide">
+                        What's Included
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {service.features.map((feature) => (
+                          <div
+                            key={feature}
+                            className="flex items-center gap-2 text-sm"
+                          >
+                            <CheckCircle2 className={`h-4 w-4 ${service.color} flex-shrink-0`} />
+                            <span className="text-foreground/80">
+                              {feature}
+                            </span>
+                          </div>
+                        ))}
                       </div>
+                    </div>
+
+                    {/* CTA Buttons */}
+                    <div className="flex flex-wrap gap-3 pt-4 border-t border-border/50">
+                      <Link to="/contact">
+                        <Button
+                          className="gradient-accent hover:scale-105 shadow-md hover:shadow-accent/50 transition-all font-semibold rounded-lg"
+                        >
+                          Request Quote
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </Link>
+                      <a href="tel:5017370930">
+                        <Button
+                          variant="outline"
+                          className="hover:bg-primary/5 hover:text-black hover:scale-105 transition-all font-semibold rounded-lg border-2"
+                        >
+                          <Phone className="mr-2 h-4 w-4" />
+                          Call Now
+                        </Button>
+                      </a>
                     </div>
                   </CardContent>
                 </Card>

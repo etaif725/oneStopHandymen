@@ -40,17 +40,17 @@ const About = () => {
 
   const owners = [
     {
-      name: 'Yonatan Azbel',
-      role: 'Co-Founder',
-      bio: 'With years of experience in property management and renovation, Yonatan brings expertise in transforming properties and delivering exceptional results. His attention to detail and commitment to quality ensures every project exceeds expectations.',
-      specialties: ['Property Staging', 'Renovations', 'Project Management'],
+      name: 'Jonathan Azbel',
+      role: 'Founder',
+      bio: 'Jonathan is involved in the operational side of the company, focusing on planning, oversight, and long term property performance. He works closely on daily execution while maintaining a broader view of priorities, costs, and future needs, ensuring properties are managed efficiently and sustainably over time.',
+      specialties: ['Operations', 'Project Oversight', 'Property Performance'],
       imageUrl: '/040a33_Yonatan1.webp',
     },
     {
       name: 'David Vilhovezky',
-      role: 'Co-Founder',
-      bio: 'David\'s background in commercial maintenance and customer service drives our company\'s dedication to reliability and professionalism. He ensures every client receives prompt, courteous service and complete satisfaction.',
-      specialties: ['Commercial Services', 'Client Relations', 'Operations'],
+      role: 'Founder',
+      bio: 'David is involved in day to day coordination, communication, and execution across projects. He works closely with clients and on site teams to ensure maintenance and operational needs are handled clearly, consistently, and with attention to detail.',
+      specialties: ['Client Communication', 'Day to Day Operations', 'Maintenance Coordination'],
       imageUrl: '/c63f62_5.webp',
     },
   ];
@@ -100,7 +100,7 @@ const About = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="text-xl md:text-2xl text-white/90 leading-relaxed max-w-3xl mx-auto"
+              className="text-xl md:text-2xl text-white/90 leading-relaxed max-w-3xl mx-auto mb-8"
             >
               Your trusted partner for professional property maintenance and handyman services in Central Arkansas
             </motion.p>
@@ -147,11 +147,11 @@ const About = () => {
               className="inline-block mb-4"
             >
               <span className="px-4 py-2 rounded-full bg-primary/10 text-primary font-semibold text-sm">
-                Our Journey
+                Our Story
               </span>
             </motion.div>
             <h2 className="font-heading font-bold text-4xl md:text-5xl lg:text-6xl text-foreground mb-6">
-              How We <span className="text-primary">Started</span>
+              About <span className="text-primary">Us</span>
             </h2>
           </motion.div>
 
@@ -166,39 +166,19 @@ const About = () => {
                 <CardContent className="p-8 md:p-12 lg:p-16">
                   <div className="prose prose-lg max-w-none">
                     <p className="text-xl md:text-2xl font-semibold text-foreground mb-8 leading-relaxed">
-                      One Stop Property Solutions was founded by Yonatan Azbel and David Vilhovezky with one clear mission: to bring reliability, organization, and trust back to property services.
+                      One Stop Property Solutions was founded by Jonathan Azbel and David Vilhovezky with a clear mission to bring structure, reliability, and clarity to property services.
                     </p>
                     
-                    <div className="grid md:grid-cols-2 gap-8 my-10">
-                      <div>
-                        <p className="text-lg text-muted-foreground leading-relaxed mb-4">
-                          After years of managing properties and leading renovation crews in Florida, they kept seeing the same frustrations everywhere. Homeowners and investors struggled to find reliable professionals for different jobs, bouncing between multiple companies, wasting time and money. They wanted to change that.
-                        </p>
-                        <p className="text-lg text-muted-foreground leading-relaxed mb-4">
-                          Their idea was simple: Create one trusted place where every property service, from repairs to management, could be handled professionally, efficiently, and under one roof.
-                        </p>
-                        <p className="text-lg text-muted-foreground leading-relaxed">
-                          In 2025 they brought that vision to Central Arkansas. They arrived with solid experience in residential and commercial building maintenance, strong communication skills, and hands-on management expertise. No flashy marketing, just real dedication to honest work and client satisfaction.
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-lg text-muted-foreground leading-relaxed mb-4">
-                          Today One Stop Property Solutions runs multiple teams across the region, offering everything from handyman services and remodeling to property management and seasonal maintenance. With extensive experience in commercial properties and direct coordination with building owners and managers, they know how to deliver results that last.
-                        </p>
-                        <p className="text-lg text-muted-foreground leading-relaxed mb-4">
-                          Despite the growth, Yonatan and David stay personally involved. They still answer the phone, visit job sites, and make sure every client gets the level of service they built their reputation on.
-                        </p>
-                        <p className="text-lg text-muted-foreground leading-relaxed">
-                          It's not complicated. Show up when you say you will, do the job right, and treat people fairly.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="bg-gradient-to-br from-primary/10 to-secondary/10 p-8 rounded-2xl border-l-4 border-primary mt-10">
-                      <p className="text-xl text-foreground font-semibold italic leading-relaxed m-0">
-                        "That's how One Stop Property Solutions became the one place Arkansas locals can truly rely on for all their property needs."
+                    <div className="space-y-6">
+                      <p className="text-lg text-muted-foreground leading-relaxed">
+                        Through years of working with private owners, commercial properties, and investors managing assets remotely, they identified recurring challenges caused by fragmented service models, scattered responsibility, and a lack of clear oversight.
                       </p>
-                      <p className="text-muted-foreground mt-4 text-sm m-0">— Yonatan Azbel & David Vilhovezky, Co-Founders</p>
+                      <p className="text-lg text-muted-foreground leading-relaxed">
+                        Rather than relying on multiple vendors and short term solutions, the company was built around a centralized approach where communication, execution, and day to day property needs are handled in one place. This structure allows property owners to stay informed, make better decisions, and avoid unnecessary expenses while maintaining consistent performance over time.
+                      </p>
+                      <p className="text-lg text-muted-foreground leading-relaxed">
+                        With a strong focus on clear communication and long term planning, Jonathan and David ensure that each client feels involved and confident, as if managing the property themselves. The result is a service model that combines hands on maintenance with structured management, designed to reduce friction, support growth, and protect the value of every property over the long term.
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -236,7 +216,7 @@ const About = () => {
               </span>
             </motion.div>
             <h2 className="font-heading font-bold text-4xl md:text-5xl lg:text-6xl text-foreground mb-6">
-              Meet the <span className="text-secondary">Owners</span>
+              Meet the <span className="text-secondary">Founders</span>
             </h2>
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               The dedicated founders bringing expertise and passion to every project
