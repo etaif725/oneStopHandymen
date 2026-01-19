@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
 import { CheckCircle2, Send, Phone, Mail, Calendar, Clock, Tag } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { contactFormSchema, type ContactFormData } from '@/schemas/contactFormSchema';
@@ -29,6 +30,8 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
     description: '',
     preferredContact: 'phone',
     bestTimeToReach: '',
+    privacyConsent: false,
+    marketingConsent: false,
   });
   const [promoCodeValue, setPromoCodeValue] = useState('');
   const [preferredDate, setPreferredDate] = useState('');
@@ -48,7 +51,7 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
       
       // Show success toast
       toast({
-        title: 'Promo Applied! 🎉',
+        title: 'Promo Code Applied',
         description: `${promoCode} has been applied to your quote request.`,
       });
     }
@@ -72,6 +75,37 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
     'Other',
   ];
 
+  // Generate unique ID for submission
+  const generateId = () => {
+    const timestamp = Date.now().toString(36);
+    const randomPart = Math.random().toString(36).substring(2, 8);
+    return `${timestamp}-${randomPart}`;
+  };
+
+  // Get UTM parameters from URL
+  const getUtmParams = () => {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      source: params.get('utm_source') || '',
+      medium: params.get('utm_medium') || '',
+      campaign: params.get('utm_campaign') || '',
+      term: params.get('utm_term') || '',
+      content: params.get('utm_content') || '',
+    };
+  };
+
+  // Build full UTM string
+  const buildUtmString = () => {
+    const utm = getUtmParams();
+    const parts = [];
+    if (utm.source) parts.push(`source=${utm.source}`);
+    if (utm.medium) parts.push(`medium=${utm.medium}`);
+    if (utm.campaign) parts.push(`campaign=${utm.campaign}`);
+    if (utm.term) parts.push(`term=${utm.term}`);
+    if (utm.content) parts.push(`content=${utm.content}`);
+    return parts.join('&');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
@@ -90,8 +124,36 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
         ...formData,
         bestTimeToReach: bestTime,
       });
+
+      // Get browser/client information
+      const utmParams = getUtmParams();
+      const userAgent = navigator.userAgent || '';
+      const referrer = document.referrer || '';
       
-      // Include promo code in the submission
+      // Build webhook data with required structure
+      const webhookData = {
+        id: generateId(),
+        client_name: validatedData.name || '',
+        client_email: validatedData.email || '',
+        client_phone: validatedData.phone || '',
+        property_type: validatedData.propertyType || '',
+        service_req: validatedData.serviceNeeded?.join(', ') || '',
+        client_note: validatedData.description || '',
+        coupon_code: promoCodeValue || '',
+        preffered_contact_method: validatedData.preferredContact || '',
+        best_time_to_reach: bestTime || '',
+        ip: '', // IP is captured server-side by the webhook
+        agent: userAgent,
+        ref: referrer,
+        source: utmParams.source,
+        medium: utmParams.medium,
+        utm: buildUtmString(),
+        timestamp: new Date().toISOString(),
+        regulatory_concent: validatedData.privacyConsent ? 'yes' : 'no',
+        marketing_concent: validatedData.marketingConsent ? 'yes' : 'no',
+      };
+      
+      // Legacy submission data for Telegram (more readable format)
       const submissionData = {
         ...validatedData,
         promoCode: promoCodeValue || undefined,
@@ -108,21 +170,65 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
 
       if (telegramBotToken && telegramChatId) {
         try {
-          // Format message for Telegram
-          const telegramMessage = `
-🏠 *New Contact Form Submission*
+          // Promo code descriptions mapping
+          const promoDescriptions: Record<string, string> = {
+            'HANDYMAN15': '15% OFF Handyman Services',
+            'STAGING5': '5 Spots Left - Property Staging',
+            'LOCKS20': '20% OFF Lock Installation',
+            'PROPMGMT3': '3 Property Management Slots (1st month free)',
+            'RESMAINT10': '10% OFF Annual Maintenance',
+            'COMMERCIAL4': '4 Commercial Contracts Left',
+            'DECK25': '25% OFF Custom Deck Building',
+            'ROOF6FREE': '6 Roof Inspection Slots (Free with repair)',
+            'PAINT18': '18% OFF Painting Services',
+            'PRESSURE8': '8 Pressure Washing Spots Left',
+            'ROOFCLEAN30': '30% OFF Roof Cleaning',
+            'GUTTER25': '25% OFF Gutter Cleaning',
+            'GARAGE20': '20% OFF Garage Door Painting',
+            'HOLIDAY5': '5 Holiday Light Slots Left',
+            'VIRTUALFREE': 'FREE Virtual Consultation',
+          };
 
-👤 *Name:* ${submissionData.name}
-📧 *Email:* ${submissionData.email}
-📞 *Phone:* ${submissionData.phone}
-🏢 *Property Type:* ${submissionData.propertyType || 'Not specified'}
-🔧 *Service Needed:* ${submissionData.serviceNeeded?.join(', ') || 'Not specified'}
-📝 *Description:* ${submissionData.description}
-💬 *Preferred Contact:* ${submissionData.preferredContact || 'Not specified'}
-⏰ *Best Time to Reach:* ${submissionData.bestTimeToReach || 'Not specified'}
-${submissionData.promoCode ? `🎁 *Promo Code:* ${submissionData.promoCode}` : ''}
-📅 *Submitted:* ${new Date(submissionData.submittedAt).toLocaleString()}
-          `.trim();
+          // Build Telegram message with only relevant info
+          const messageParts: string[] = [
+            `🏠 *New Lead*`,
+            ``,
+            `👤 *${webhookData.client_name}*`,
+            `📞 ${webhookData.client_phone}`,
+            `📧 ${webhookData.client_email}`,
+            ``,
+            `🔧 *Service:* ${webhookData.service_req}`,
+          ];
+
+          // Add message if provided
+          if (webhookData.client_note) {
+            messageParts.push(`💬 *Message:* ${webhookData.client_note}`);
+          }
+
+          // Add contact preference if provided
+          if (webhookData.preffered_contact_method && webhookData.best_time_to_reach) {
+            messageParts.push(``, `📅 *Contact via ${webhookData.preffered_contact_method}:* ${webhookData.best_time_to_reach}`);
+          } else if (webhookData.preffered_contact_method) {
+            messageParts.push(``, `📅 *Preferred contact:* ${webhookData.preffered_contact_method}`);
+          } else if (webhookData.best_time_to_reach) {
+            messageParts.push(``, `📅 *Best time:* ${webhookData.best_time_to_reach}`);
+          }
+
+          // Add promo code with description if applied
+          if (webhookData.coupon_code) {
+            const promoDesc = promoDescriptions[webhookData.coupon_code] || webhookData.coupon_code;
+            messageParts.push(``, `🎁 *Promo:* ${promoDesc}`);
+          }
+
+          // Add tracking info only if any exists
+          const hasTracking = webhookData.source || webhookData.ref || webhookData.utm;
+          if (hasTracking) {
+            messageParts.push(``, `📊 *Source:*`);
+            if (webhookData.source) messageParts.push(`  • UTM: ${webhookData.source}${webhookData.medium ? ` / ${webhookData.medium}` : ''}`);
+            if (webhookData.ref) messageParts.push(`  • Ref: ${webhookData.ref}`);
+          }
+
+          const telegramMessage = messageParts.join('\n').trim();
 
           const telegramResponse = await fetch(
             `https://api.telegram.org/bot${telegramBotToken}/sendMessage`,
@@ -137,11 +243,13 @@ ${submissionData.promoCode ? `🎁 *Promo Code:* ${submissionData.promoCode}` : 
             }
           );
 
-          if (telegramResponse.ok) {
+          const telegramResult = await telegramResponse.json();
+          if (telegramResponse.ok && telegramResult.ok) {
             results.telegram = true;
+            console.log('Telegram message sent successfully');
           } else {
-            const telegramError = await telegramResponse.text();
-            console.error('Telegram error:', telegramError);
+            console.error('Telegram API error:', telegramResult);
+            console.error('Telegram error description:', telegramResult.description);
             errors.push('Telegram notification failed');
           }
         } catch (telegramErr) {
@@ -151,7 +259,7 @@ ${submissionData.promoCode ? `🎁 *Promo Code:* ${submissionData.promoCode}` : 
       }
 
       // 2. Send to webhook for Excel/Sheets
-      let webhookUrl = import.meta.env.VITE_FORM_WEBHOOK;
+      const webhookUrl = import.meta.env.VITE_FORM_WEBHOOK;
       const apiKey = import.meta.env.VITE_FORM_API_KEY;
       
       if (webhookUrl) {
@@ -160,18 +268,15 @@ ${submissionData.promoCode ? `🎁 *Promo Code:* ${submissionData.promoCode}` : 
             'Content-Type': 'application/json',
           };
 
-          // Add API key for Make.com compatibility
+          // Add API key using Make.com's x-make-apikey header
           if (apiKey) {
             headers['x-make-apikey'] = apiKey;
-            const url = new URL(webhookUrl);
-            url.searchParams.append('apikey', apiKey);
-            webhookUrl = url.toString();
           }
 
           const response = await fetch(webhookUrl, {
             method: 'POST',
             headers,
-            body: JSON.stringify(submissionData),
+            body: JSON.stringify(webhookData),
           });
 
           if (response.ok) {
@@ -189,8 +294,8 @@ ${submissionData.promoCode ? `🎁 *Promo Code:* ${submissionData.promoCode}` : 
       // Check if at least one submission method succeeded
       if (results.telegram || results.webhook) {
         toast({
-          title: 'Message sent successfully!',
-          description: "We'll get back to you within 1 hour.",
+          title: 'Thank you for contacting us!',
+          description: "Your message has been received. We'll get back to you within 1 hour.",
         });
 
         setFormData({
@@ -202,6 +307,8 @@ ${submissionData.promoCode ? `🎁 *Promo Code:* ${submissionData.promoCode}` : 
           description: '',
           preferredContact: 'phone',
           bestTimeToReach: '',
+          privacyConsent: false,
+          marketingConsent: false,
         });
         setPromoCodeValue('');
         setPreferredDate('');
@@ -210,7 +317,8 @@ ${submissionData.promoCode ? `🎁 *Promo Code:* ${submissionData.promoCode}` : 
         throw new Error('Unable to send message. Please try again or contact us directly.');
       }
     } catch (error: any) {
-      if (error.errors) {
+      // Handle Zod validation errors
+      if (error.errors && Array.isArray(error.errors)) {
         const fieldErrors: Record<string, string> = {};
         error.errors.forEach((err: any) => {
           if (err.path) {
@@ -218,12 +326,25 @@ ${submissionData.promoCode ? `🎁 *Promo Code:* ${submissionData.promoCode}` : 
           }
         });
         setErrors(fieldErrors);
+        
+        // Show user-friendly validation error toast
+        toast({
+          title: 'Please check your information',
+          description: 'Some required fields are missing or invalid. Please review the form and try again.',
+          variant: 'destructive',
+        });
+      } else {
+        // Handle other errors (network, API, etc.)
+        const errorMessage = error.message === 'Unable to send message. Please try again or contact us directly.'
+          ? error.message
+          : 'Something went wrong. Please try again or contact us directly at (501) 737-0930.';
+        
+        toast({
+          title: 'Unable to send message',
+          description: errorMessage,
+          variant: 'destructive',
+        });
       }
-      toast({
-        title: 'Error sending message',
-        description: error.message || 'Please try again later.',
-        variant: 'destructive',
-      });
     } finally {
       setIsSubmitting(false);
     }
@@ -317,13 +438,50 @@ ${submissionData.promoCode ? `🎁 *Promo Code:* ${submissionData.promoCode}` : 
         
         <div>
           <Textarea
-            placeholder="Project Description *"
+            placeholder="Project Description (optional)"
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             rows={3}
             className={`text-sm resize-none ${errors.description ? 'border-destructive' : 'border-border/50 focus:border-primary'}`}
           />
           {errors.description && <p className="text-destructive text-xs mt-1">{errors.description}</p>}
+        </div>
+
+        {/* Consent Checkboxes */}
+        <div className="space-y-3">
+          <div className="flex items-start space-x-2">
+            <Checkbox
+              id="privacy-consent-compact"
+              checked={formData.privacyConsent}
+              onCheckedChange={(checked) => setFormData({ ...formData, privacyConsent: checked as boolean })}
+              className={errors.privacyConsent ? 'border-destructive' : ''}
+            />
+            <label
+              htmlFor="privacy-consent-compact"
+              className="text-xs text-muted-foreground leading-tight cursor-pointer"
+            >
+              I agree to the{' '}
+              <Link to="/privacy-policy" className="text-primary hover:underline" target="_blank">
+                Privacy Policy
+              </Link>{' '}
+              and consent to the processing of my personal data. *
+            </label>
+          </div>
+          {errors.privacyConsent && <p className="text-destructive text-xs">{errors.privacyConsent}</p>}
+
+          <div className="flex items-start space-x-2">
+            <Checkbox
+              id="marketing-consent-compact"
+              checked={formData.marketingConsent}
+              onCheckedChange={(checked) => setFormData({ ...formData, marketingConsent: checked as boolean })}
+            />
+            <label
+              htmlFor="marketing-consent-compact"
+              className="text-xs text-muted-foreground leading-tight cursor-pointer"
+            >
+              I would like to receive promotional emails and updates about services and offers.
+            </label>
+          </div>
         </div>
         
         <Button
@@ -480,7 +638,7 @@ ${submissionData.promoCode ? `🎁 *Promo Code:* ${submissionData.promoCode}` : 
 
       {/* Project Description */}
       <div className="space-y-2">
-        <Label htmlFor="description" className="text-base font-semibold">Project Description *</Label>
+        <Label htmlFor="description" className="text-base font-semibold">Project Description (optional)</Label>
         <Textarea
           id="description"
           value={formData.description}
@@ -567,6 +725,48 @@ ${submissionData.promoCode ? `🎁 *Promo Code:* ${submissionData.promoCode}` : 
           <p className="text-muted-foreground text-xs">
             Select your preferred date and time for us to contact you
           </p>
+        </div>
+      </div>
+
+      {/* Consent Checkboxes */}
+      <div className="space-y-4 p-6 bg-muted/30 rounded-xl border border-border/50">
+        <div className="flex items-start space-x-3">
+          <Checkbox
+            id="privacy-consent"
+            checked={formData.privacyConsent}
+            onCheckedChange={(checked) => setFormData({ ...formData, privacyConsent: checked as boolean })}
+            className={`mt-0.5 ${errors.privacyConsent ? 'border-destructive' : ''}`}
+          />
+          <label
+            htmlFor="privacy-consent"
+            className="text-sm text-muted-foreground leading-relaxed cursor-pointer"
+          >
+            I agree to the{' '}
+            <Link to="/privacy-policy" className="text-primary font-semibold hover:underline" target="_blank">
+              Privacy Policy
+            </Link>{' '}
+            and consent to the collection and processing of my personal data for the purpose of responding to my inquiry. *
+          </label>
+        </div>
+        {errors.privacyConsent && (
+          <p className="text-destructive text-sm flex items-center gap-1 ml-6">
+            <span>⚠</span> {errors.privacyConsent}
+          </p>
+        )}
+
+        <div className="flex items-start space-x-3">
+          <Checkbox
+            id="marketing-consent"
+            checked={formData.marketingConsent}
+            onCheckedChange={(checked) => setFormData({ ...formData, marketingConsent: checked as boolean })}
+            className="mt-0.5"
+          />
+          <label
+            htmlFor="marketing-consent"
+            className="text-sm text-muted-foreground leading-relaxed cursor-pointer"
+          >
+            I would like to receive promotional emails, newsletters, and updates about services and special offers. You can unsubscribe at any time.
+          </label>
         </div>
       </div>
 

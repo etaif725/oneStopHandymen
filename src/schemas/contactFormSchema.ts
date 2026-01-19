@@ -24,13 +24,20 @@ export const contactFormSchema = z.object({
     .max(10, 'Maximum 10 services can be selected'),
   description: z
     .string()
-    .min(5, 'Please provide more details (minimum 5 characters)')
     .max(1000, 'Description must be less than 1000 characters')
-    .trim(),
+    .trim()
+    .optional()
+    .or(z.literal('')),
   preferredContact: z.enum(['phone', 'email'], {
     required_error: 'Please select your preferred contact method',
   }),
   bestTimeToReach: z.string().optional(),
+  privacyConsent: z
+    .boolean()
+    .refine((val) => val === true, {
+      message: 'You must agree to the Privacy Policy to submit this form',
+    }),
+  marketingConsent: z.boolean().optional(),
 });
 
 export type ContactFormData = z.infer<typeof contactFormSchema>;
