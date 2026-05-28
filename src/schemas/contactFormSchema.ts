@@ -28,10 +28,6 @@ export const contactFormSchema = z.object({
     .trim()
     .optional()
     .or(z.literal('')),
-  preferredContact: z.enum(['phone', 'email'], {
-    required_error: 'Please select your preferred contact method',
-  }),
-  bestTimeToReach: z.string().optional(),
   privacyConsent: z
     .boolean()
     .refine((val) => val === true, {

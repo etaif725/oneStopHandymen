@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { CheckCircle2, Send, Phone, Mail, Calendar, Clock, Tag } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { contactFormSchema, type ContactFormData } from '@/schemas/contactFormSchema';
+import { SERVICES } from '@/constants/business';
 
 interface LeadGenFormProps {
   variant?: 'default' | 'compact';
@@ -28,14 +29,10 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
     propertyType: undefined,
     serviceNeeded: [],
     description: '',
-    preferredContact: 'phone',
-    bestTimeToReach: '',
     privacyConsent: false,
     marketingConsent: false,
   });
   const [promoCodeValue, setPromoCodeValue] = useState('');
-  const [preferredDate, setPreferredDate] = useState('');
-  const [preferredTime, setPreferredTime] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -57,23 +54,7 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
     }
   }, [promoCode, serviceFromPromo, toast]);
 
-  const services = [
-    'Handyman Services',
-    'Property Staging & Prep',
-    'Lock Replacement & Installation',
-    'Property Management Solutions',
-    'Residential Maintenance',
-    'Commercial Property Care',
-    'Remodeling & Custom Projects',
-    'Pre-Winter Roof Cleaning',
-    'Gutter Cleaning Before Winter',
-    'Roofing Services',
-    'Painting Services',
-    'Garage Door Painting',
-    'Pressure Washing',
-    'Holiday Light Installation',
-    'Other',
-  ];
+  const services = [...SERVICES.map((s) => s.name), 'Other'];
 
   // Generate unique ID for submission
   const generateId = () => {
@@ -112,18 +93,7 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
     setIsSubmitting(true);
 
     try {
-      // Combine date and time into bestTimeToReach
-      let bestTime = formData.bestTimeToReach || '';
-      if (preferredDate || preferredTime) {
-        const datePart = preferredDate ? new Date(preferredDate).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }) : '';
-        const timePart = preferredTime || '';
-        bestTime = [datePart, timePart].filter(Boolean).join(' at ');
-      }
-
-      const validatedData = contactFormSchema.parse({
-        ...formData,
-        bestTimeToReach: bestTime,
-      });
+      const validatedData = contactFormSchema.parse(formData);
 
       // Get browser/client information
       const utmParams = getUtmParams();
@@ -140,8 +110,6 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
         service_req: validatedData.serviceNeeded?.join(', ') || '',
         client_note: validatedData.description || '',
         coupon_code: promoCodeValue || '',
-        preffered_contact_method: validatedData.preferredContact || '',
-        best_time_to_reach: bestTime || '',
         ip: '', // IP is captured server-side by the webhook
         agent: userAgent,
         ref: referrer,
@@ -203,15 +171,6 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
           // Add message if provided
           if (webhookData.client_note) {
             messageParts.push(`💬 *Message:* ${webhookData.client_note}`);
-          }
-
-          // Add contact preference if provided
-          if (webhookData.preffered_contact_method && webhookData.best_time_to_reach) {
-            messageParts.push(``, `📅 *Contact via ${webhookData.preffered_contact_method}:* ${webhookData.best_time_to_reach}`);
-          } else if (webhookData.preffered_contact_method) {
-            messageParts.push(``, `📅 *Preferred contact:* ${webhookData.preffered_contact_method}`);
-          } else if (webhookData.best_time_to_reach) {
-            messageParts.push(``, `📅 *Best time:* ${webhookData.best_time_to_reach}`);
           }
 
           // Add promo code with description if applied
@@ -305,14 +264,10 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
           propertyType: undefined,
           serviceNeeded: [],
           description: '',
-          preferredContact: 'phone',
-          bestTimeToReach: '',
           privacyConsent: false,
           marketingConsent: false,
         });
         setPromoCodeValue('');
-        setPreferredDate('');
-        setPreferredTime('');
       } else {
         throw new Error('Unable to send message. Please try again or contact us directly.');
       }
@@ -435,17 +390,6 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
             />
           </div>
         )}
-        
-        <div>
-          <Textarea
-            placeholder="Project Description (optional)"
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            rows={3}
-            className={`text-sm resize-none ${errors.description ? 'border-destructive' : 'border-border/50 focus:border-primary'}`}
-          />
-          {errors.description && <p className="text-destructive text-xs mt-1">{errors.description}</p>}
-        </div>
 
         {/* Consent Checkboxes */}
         <div className="space-y-3">
@@ -487,7 +431,7 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
         <Button
           type="submit"
           size="lg"
-          className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white text-sm px-8 py-5 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all font-bold"
+          className="w-full btn-primary border-0 h-auto py-3.5"
           disabled={isSubmitting}
         >
           {isSubmitting ? (
@@ -497,7 +441,7 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
             </span>
           ) : (
             <>
-              Get Free Estimate
+              Schedule a Call
               <Send className="ml-2 h-4 w-4" />
             </>
           )}
@@ -505,7 +449,7 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
         
         <p className="text-center text-muted-foreground text-xs">
           <CheckCircle2 className="inline h-3 w-3 mr-1" />
-          No obligation • Free consultation • Quick response
+          No obligation - Free consultation - Quick response
         </p>
       </form>
     );
@@ -558,7 +502,7 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
             type="tel"
             value={formData.phone}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            placeholder="(772) 453-7842"
+            placeholder="(501) 737-0930"
             className={`h-12 text-base ${errors.phone ? 'border-destructive' : 'border-border/50 focus:border-primary'}`}
           />
           {errors.phone && (
@@ -636,98 +580,6 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
         </div>
       )}
 
-      {/* Project Description */}
-      <div className="space-y-2">
-        <Label htmlFor="description" className="text-base font-semibold">Project Description (optional)</Label>
-        <Textarea
-          id="description"
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          rows={6}
-          placeholder="Please describe your project in detail..."
-          className={`text-base resize-none ${errors.description ? 'border-destructive' : 'border-border/50 focus:border-primary'}`}
-        />
-        {errors.description && (
-          <p className="text-destructive text-sm mt-1 flex items-center gap-1">
-            <span>⚠</span> {errors.description}
-          </p>
-        )}
-      </div>
-
-      {/* Contact Preference & Best Time */}
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="space-y-3">
-          <Label className="text-base font-semibold">Preferred Contact Method *</Label>
-          <RadioGroup
-            value={formData.preferredContact || ''}
-            onValueChange={(value: any) => setFormData({ ...formData, preferredContact: value })}
-            className="flex flex-col gap-3"
-          >
-            <div className={`flex items-center space-x-3 p-4 rounded-lg border-2 transition-all cursor-pointer hover:border-primary/50 hover:bg-primary/5 ${
-              formData.preferredContact === 'phone' ? 'border-primary bg-primary/10' : 'border-border/30'
-            }`}>
-              <RadioGroupItem value="phone" id="phone-contact" />
-              <Label htmlFor="phone-contact" className="font-semibold cursor-pointer flex items-center gap-2 flex-1">
-                <Phone className="h-4 w-4" />
-                Phone
-              </Label>
-            </div>
-            <div className={`flex items-center space-x-3 p-4 rounded-lg border-2 transition-all cursor-pointer hover:border-primary/50 hover:bg-primary/5 ${
-              formData.preferredContact === 'email' ? 'border-primary bg-primary/10' : 'border-border/30'
-            }`}>
-              <RadioGroupItem value="email" id="email-contact" />
-              <Label htmlFor="email-contact" className="font-semibold cursor-pointer flex items-center gap-2 flex-1">
-                <Mail className="h-4 w-4" />
-                Email
-              </Label>
-            </div>
-          </RadioGroup>
-          {errors.preferredContact && (
-            <p className="text-destructive text-sm mt-1 flex items-center gap-1">
-              <span>⚠</span> {errors.preferredContact}
-            </p>
-          )}
-        </div>
-
-        <div className="space-y-3">
-          <Label className="text-base font-semibold">Best Time to Reach (Optional)</Label>
-          <div className="space-y-3">
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
-              <Input
-                type="date"
-                value={preferredDate}
-                onChange={(e) => setPreferredDate(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
-                className="h-12 text-base border-border/50 focus:border-primary pl-10"
-              />
-            </div>
-            <div className="relative">
-              <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
-              <Select
-                value={preferredTime}
-                onValueChange={(value) => setPreferredTime(value)}
-              >
-                <SelectTrigger className="h-12 text-base border-border/50 focus:border-primary pl-10">
-                  <SelectValue placeholder="Select time slot" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="8:00 AM - 10:00 AM">8:00 AM - 10:00 AM</SelectItem>
-                  <SelectItem value="10:00 AM - 12:00 PM">10:00 AM - 12:00 PM</SelectItem>
-                  <SelectItem value="12:00 PM - 2:00 PM">12:00 PM - 2:00 PM</SelectItem>
-                  <SelectItem value="2:00 PM - 4:00 PM">2:00 PM - 4:00 PM</SelectItem>
-                  <SelectItem value="4:00 PM - 6:00 PM">4:00 PM - 6:00 PM</SelectItem>
-                  <SelectItem value="6:00 PM - 8:00 PM">6:00 PM - 8:00 PM</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <p className="text-muted-foreground text-xs">
-            Select your preferred date and time for us to contact you
-          </p>
-        </div>
-      </div>
-
       {/* Consent Checkboxes */}
       <div className="space-y-4 p-6 bg-muted/30 rounded-xl border border-border/50">
         <div className="flex items-start space-x-3">
@@ -775,7 +627,7 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
         <Button
           type="submit"
           size="lg"
-          className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white text-lg md:text-xl px-12 py-8 rounded-xl shadow-2xl hover:shadow-xl hover:scale-105 transition-all font-bold border-0"
+          className="w-full btn-primary h-auto py-4 text-base"
           disabled={isSubmitting}
         >
           {isSubmitting ? (

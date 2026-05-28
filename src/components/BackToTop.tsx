@@ -7,53 +7,34 @@ const BackToTop = () => {
 
   useEffect(() => {
     const toggleVisibility = () => {
-      if (window.scrollY > 300) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
+      setIsVisible(window.scrollY > 300);
     };
 
-    window.addEventListener('scroll', toggleVisibility);
+    window.addEventListener('scroll', toggleVisibility, { passive: true });
     return () => window.removeEventListener('scroll', toggleVisibility);
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
     <AnimatePresence>
       {isVisible && (
         <div className="fixed bottom-8 right-8 z-50">
-          {/* Main Back to Top Button */}
           <motion.button
+            type="button"
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={scrollToTop}
-            className="gradient-accent w-16 h-16 rounded-full shadow-2xl flex items-center justify-center text-white transition-all hover:shadow-accent"
+            className="relative flex h-12 w-12 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-lg ring-2 ring-accent/30 transition-shadow hover:shadow-xl"
             aria-label="Back to top"
           >
-            <ChevronUp className="h-7 w-7" />
+            <ChevronUp className="h-6 w-6 stroke-[2.5]" aria-hidden="true" />
           </motion.button>
-
-          {/* Pulsing ring animation */}
-          <motion.div
-            className="absolute inset-0 rounded-full bg-accent pointer-events-none"
-            initial={{ scale: 1, opacity: 0.5 }}
-            animate={{ scale: 1.5, opacity: 0 }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              repeatType: "loop",
-            }}
-          />
         </div>
       )}
     </AnimatePresence>
@@ -61,4 +42,3 @@ const BackToTop = () => {
 };
 
 export default BackToTop;
-

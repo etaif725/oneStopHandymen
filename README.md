@@ -29,7 +29,7 @@ Property Fixer Kit is a comprehensive web application showcasing handyman servic
 - **About** - Company story, team profiles, mission & values
 - **Services** - Detailed service descriptions with individual CTAs
 - **Contact** - Comprehensive contact form with FAQ and map
-- **Gallery** - Portfolio showcase (ready for implementation)
+- **Projects** - Portfolio showcase (ready for implementation)
 - **404** - Custom not-found page
 
 ### 🔧 Advanced Features
@@ -95,7 +95,7 @@ property-fixer-kit-main/
 │   │   ├── About.tsx
 │   │   ├── Services.tsx
 │   │   ├── Contact.tsx
-│   │   ├── Gallery.tsx
+│   │   ├── Projects.tsx
 │   │   └── NotFound.tsx
 │   ├── schemas/            # Zod validation schemas
 │   │   └── contactFormSchema.ts

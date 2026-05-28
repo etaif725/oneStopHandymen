@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Clock, Percent, Users, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -21,6 +21,7 @@ const PromoBar = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const [isDismissed, setIsDismissed] = useState(false);
+  const barRef = useRef<HTMLDivElement>(null);
 
   // Helper function to calculate relative time
   const getRelativeTime = (expiryDate: Date | null) => {
@@ -244,6 +245,28 @@ const PromoBar = () => {
     setIsDismissed(true);
   };
 
+  useEffect(() => {
+    const root = document.documentElement;
+
+    const syncPromoHeight = () => {
+      if (isDismissed || promos.length === 0) {
+        root.style.setProperty('--promo-h', '0px');
+        return;
+      }
+      requestAnimationFrame(() => {
+        const height = barRef.current?.offsetHeight ?? 0;
+        root.style.setProperty('--promo-h', `${height}px`);
+      });
+    };
+
+    syncPromoHeight();
+    window.addEventListener('resize', syncPromoHeight);
+    return () => {
+      window.removeEventListener('resize', syncPromoHeight);
+      root.style.setProperty('--promo-h', '0px');
+    };
+  }, [isDismissed, promos.length, currentIndex]);
+
   // Don't show if dismissed or no active promos
   if (isDismissed || promos.length === 0) return null;
 
@@ -251,9 +274,9 @@ const PromoBar = () => {
   const Icon = currentPromo.icon;
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 shadow-sm md:shadow-none pb-3">
-      <div className={`bg-gradient-to-r ${currentPromo.bgGradient} text-white transition-all duration-500 md:opacity-90 hover:md:opacity-100`}>
-        <div className="container mx-auto px-3 py-2.5 md:py-2 md:px-6 lg:px-8">
+    <div ref={barRef} className="promo-bar">
+      <div className="text-white">
+        <div className="site-container py-2 md:py-1.5">
           {/* Mobile-First Layout */}
           <div className="flex items-center justify-between gap-2 md:gap-6">
             {/* Left side - Icon and Message */}
@@ -303,7 +326,7 @@ const PromoBar = () => {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="gradient-accent text-white px-3 py-2 md:px-4 md:py-1.5 rounded-lg font-bold text-xs md:text-sm hover:shadow-lg transition-all flex items-center gap-1.5 shadow-md whitespace-nowrap min-h-[44px] md:min-h-[32px]"
+                  className="btn-primary text-xs px-3 py-2 md:py-1.5 min-h-[44px] md:min-h-[32px] whitespace-nowrap"
                 >
                   <span>{currentPromo.cta}</span>
                   <ArrowRight className="h-3.5 w-3.5 md:h-3.5 md:w-3.5" />

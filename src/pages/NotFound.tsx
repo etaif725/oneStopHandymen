@@ -1,37 +1,40 @@
-import { useLocation, Link } from "react-router-dom";
-import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Home, ArrowLeft } from "lucide-react";
+import { useLocation, Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { ArrowLeft } from 'lucide-react';
+import SiteLayout from '@/components/SiteLayout';
 
 const NotFound = () => {
   const location = useLocation();
 
   useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+    console.error('404 Error: User attempted to access non-existent route:', location.pathname);
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center px-4">
-        <h1 className="mb-4 text-8xl font-heading font-bold text-primary">404</h1>
-        <p className="mb-8 text-2xl text-muted-foreground">Oops! Page not found</p>
-        <p className="mb-8 text-muted-foreground max-w-md mx-auto">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link to="/">
-            <Button size="lg" className="gradient-primary">
-              <Home className="mr-2 h-5 w-5" />
-              Return Home
-            </Button>
-          </Link>
-          <Button size="lg" variant="outline" onClick={() => window.history.back()}>
-            <ArrowLeft className="mr-2 h-5 w-5" />
-            Go Back
-          </Button>
+    <SiteLayout>
+      <section className="section-pad min-h-[60vh] flex items-center pt-[calc(var(--site-top)+4rem)]">
+        <div className="site-container text-center max-w-lg mx-auto">
+          <p className="section-label">Error 404</p>
+          <h1 className="display-xl mb-4">Page not found</h1>
+          <p className="lead mb-10">
+            The page you requested does not exist or may have been moved.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/" className="btn-primary">
+              Return home
+            </Link>
+            <button
+              type="button"
+              className="btn-outline-dark inline-flex items-center justify-center gap-2"
+              onClick={() => window.history.back()}
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Go back
+            </button>
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </SiteLayout>
   );
 };
 
