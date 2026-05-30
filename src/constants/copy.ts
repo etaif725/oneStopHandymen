@@ -234,8 +234,8 @@ export const ABOUT_COPY = {
   problemTitle: 'The problem we kept watching investors run into.',
   problemParagraphs: [
     'Out-of-state investors would buy properties in Arkansas, hand them off to a property manager, and then disappear into a black box. Calls went unanswered. Repairs sat undone. Vendors invoiced without anyone walking the work. Section 8 inspections failed for reasons nobody explained.',
-    "The local market had plenty of handymen and plenty of part-time property managers. What it didn't have was a real operations company — one team that could plan a deal, run the renovation, place a tenant, manage the ongoing property, and tell you exactly what was happening at every step.",
-    "So we built it. Today One Stop Property Solutions operates properties across Arkansas for investors who refuse to be in the dark — and for local business owners, hospitality groups, and commercial property owners who are tired of stitching together vendors.",
+    "The local market had plenty of handymen and plenty of part-time property managers. What it didn't have was a real operations company with one team that could plan a deal, run the renovation, place a tenant, manage the ongoing property, and tell you exactly what was happening at every step.",
+    "So we built it. Today One Stop Property Solutions operates properties across Arkansas for investors who refuse to be in the dark, and for local business owners, hospitality groups, and commercial property owners who are tired of stitching together vendors.",
     "One Stop Property Solutions was founded by Jonathan Azbel and David Vilhovezky after years of watching investors struggle with absent property managers, unreliable vendors, and zero visibility into their own properties.",
   ],
   principlesEyebrow: 'How we operate',
@@ -255,11 +255,11 @@ export const ABOUT_COPY = {
     },
     {
       title: 'Long-term over transactional.',
-      body: 'We win when your property performs for years — not when we close a single work order. Our operations are built for that horizon.',
+      body: 'We win when your property performs for years, not when we close a single work order. Our operations are built for that horizon.',
     },
   ],
   breadthTitle:
-    'Whether you own a rental, commercial building, Airbnb, hotel, office, or an entire portfolio — we provide everything under one roof.',
+    'Whether you own a rental, commercial building, Airbnb, hotel, office, or an entire portfolio, we provide everything under one roof.',
   breadthSubtitle:
     'One team. One point of contact. Long-term property support you can rely on.',
   missionTitle: 'One team. One point of contact.',

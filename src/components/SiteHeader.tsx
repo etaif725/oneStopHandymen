@@ -20,7 +20,7 @@ const SiteHeader = () => {
   return (
     <header className="site-header">
       <div className="site-container site-header-inner">
-        <Link to="/" className="flex-shrink-0" onClick={() => setOpen(false)}>
+        <Link to="/" className="min-w-0 shrink" onClick={() => setOpen(false)}>
           <img
             src={logo}
             alt="One Stop Property Solutions"
