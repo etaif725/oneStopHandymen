@@ -22,7 +22,14 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: 'what-is-one-stop',
     category: 'general',
     question: 'What is One Stop Property Solutions?',
-    answer: `${BUSINESS_INFO.name} is a Central Arkansas property operations team built for real estate investors. We combine deal support, renovations, leasing, Section 8 coordination, and ongoing property management under one local team so remote owners have a single point of contact.`,
+    answer: `${BUSINESS_INFO.name} is a Central Arkansas property operations team built for real estate investors. ${BUSINESS_INFO.methodologyLine} We combine deal support, renovations, leasing, Section 8 coordination, and ongoing property management under one local team so remote owners have a single point of contact.`,
+  },
+  {
+    id: 'different-from-little-rock',
+    category: 'general',
+    question: 'How are you different from other Little Rock property managers?',
+    answer:
+      'Little Rock has strong national brands, long-running brokerages, and franchise networks. We focus on operator-led communication: group chats, photo and video from the field, and one accountable team from acquisition through management. See our Compare page for a fair breakdown of who each model fits best.',
   },
   {
     id: 'investors-remote',
@@ -52,7 +59,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: 'services-offered',
     category: 'services',
     question: 'What services do you provide?',
-    answer: 'We offer investment support and deal evaluation, renovation and rent-ready preparation, Section 8 property support, leasing and tenant placement, full property management and operations, and commercial property support. All services are coordinated through one team.',
+    answer: 'We offer investment support and deal evaluation, renovation and rent-ready preparation, Section 8 property support, leasing and tenant placement, property management and operations, commercial property support, Airbnb and short-term rental operations, hospitality and hotel operations, and long-term maintenance and property care. All services are coordinated through one team.',
   },
   {
     id: 'renovation-turnover',
@@ -77,6 +84,20 @@ export const FAQ_ITEMS: FaqItem[] = [
     category: 'section8',
     question: 'Can you prepare a unit for a Section 8 inspection?',
     answer: 'Yes. We assess the property against inspection requirements, coordinate repairs, communicate with relevant parties, and prepare the unit so it is ready for a successful inspection.',
+  },
+  {
+    id: 'section8-local-authorities',
+    category: 'section8',
+    question: 'Do you work with local housing authorities in Arkansas?',
+    answer:
+      'Yes. We coordinate Section 8 turnovers and inspections with local processes, including work tied to the Little Rock Housing Authority and Arkansas Development Finance Authority requirements. We keep owners updated in the thread as paperwork and repairs move forward.',
+  },
+  {
+    id: 'inspections-reporting',
+    category: 'investors',
+    question: 'How do property walkthroughs and owner reporting work?',
+    answer:
+      'We document walkthroughs with photos and video shared in your owner thread, not only in a portal tab you might never open. Repairs follow a clear approval path so routine fixes do not stall. Monthly reporting is written in plain language so you can see performance without decoding a generic statement.',
   },
   {
     id: 'coverage-areas',

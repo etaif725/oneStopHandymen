@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin } from 'lucide-react';
-import ArkansasCoverageMap from '@/components/ArkansasCoverageMap';
+import CoverageInteractiveMap from '@/components/CoverageInteractiveMap';
 import { BUSINESS_INFO } from '@/constants/business';
 import { SERVICE_AREA_LOCATIONS, type ServiceAreaLocation } from '@/constants/serviceAreaMap';
 
@@ -22,7 +22,7 @@ const CoverageSection = () => {
         </div>
 
         <div className="coverage-layout">
-          <ArkansasCoverageMap
+          <CoverageInteractiveMap
             activeId={activeArea?.id}
             onAreaHover={setActiveArea}
             onAreaSelect={setActiveArea}

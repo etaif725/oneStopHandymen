@@ -1,6 +1,14 @@
+import {
+  buildGoogleMapsEmbedUrl,
+  computeEmbedViewport,
+  type CoverageEmbedViewport,
+} from '@/lib/coverageMapProjection';
+
 export const BUSINESS_INFO = {
   name: "One Stop Property Solutions",
+  methodologyName: "Boots on Ground Ops",
   tagline: "Your Boots on the Ground in Arkansas",
+  methodologyLine: "One Stop Property Solutions. Powered by boots-on-the-ground ops.",
   phone: "(501) 737-0930",
   email: "info@onestoppropertyar.com",
   address: "Little Rock, AR",
@@ -19,8 +27,21 @@ export const BUSINESS_INFO = {
   hours: {
     weekdays: "Available 7 Days a Week",
     weekends: "Weekend Support Available",
-    emergency: "Modern Communication - Not a 9-to-5 Company"
+    emergency: "Modern communication. Not a 9-to-5 company."
   }
+};
+
+/**
+ * Google Maps embed — `viewport` drives overlay pin alignment (Web Mercator).
+ * After changing center/zoom, keep `url` in sync (generated from viewport).
+ * Replace with Share → Embed from GMB only if you copy matching center + zoom here.
+ */
+const COVERAGE_EMBED_VIEWPORT: CoverageEmbedViewport = computeEmbedViewport();
+
+export const GOOGLE_MAPS_EMBED = {
+  url: buildGoogleMapsEmbedUrl(COVERAGE_EMBED_VIEWPORT),
+  title: 'One Stop Property Solutions — Central Arkansas service area',
+  viewport: COVERAGE_EMBED_VIEWPORT,
 };
 
 export type SocialPlatform = 'instagram' | 'facebook' | 'linkedin' | 'youtube';
@@ -46,7 +67,8 @@ export const SERVICES = [
   {
     id: 'investment-support',
     name: 'Investment Support & Deal Evaluation',
-    description: 'We help investors evaluate properties, walk homes, assess conditions, and build a clear operational plan before committing to a purchase.',
+    description:
+      'You are looking at a Little Rock address from another time zone. We walk the property, photograph what matters, and tell you what it will take to perform before you wire earnest money.',
     icon: 'Search',
     features: [
       'Property walkthroughs',
@@ -61,7 +83,8 @@ export const SERVICES = [
   {
     id: 'renovation-rent-ready',
     name: 'Renovation & Rent Ready',
-    description: 'We turn distressed properties into income-producing assets, built for durability, long-term cash flow, and rental performance.',
+    description:
+      'Vacant and tired units become rent-ready assets with durable upgrades chosen for cash flow, not showroom photos. You watch progress in the thread instead of wondering if anyone showed up.',
     icon: 'Hammer',
     features: [
       'Full property renovations',
@@ -76,7 +99,8 @@ export const SERVICES = [
   {
     id: 'section-8-support',
     name: 'Section 8 Property Support',
-    description: 'Hands-on support for investors operating Section 8 rental properties, from inspection preparation to ongoing tenant communication and maintenance.',
+    description:
+      'Section 8 owners live and die by inspections and local process. We prepare units, coordinate repairs, and work through Little Rock Housing Authority and Arkansas Development Finance Authority requirements so you are not guessing from out of state.',
     icon: 'ClipboardCheck',
     features: [
       'Inspection preparation',
@@ -91,7 +115,8 @@ export const SERVICES = [
   {
     id: 'leasing-tenant-placement',
     name: 'Leasing & Tenant Placement',
-    description: 'We market properties through Zillow and major rental platforms, coordinate showings, and help investors fill vacancies faster.',
+    description:
+      'We market on Zillow and major rental platforms, run showings, and fill vacancies faster because the same team that knows the renovation story also handles the lease.',
     icon: 'Users',
     features: [
       'Zillow marketing',
@@ -106,7 +131,8 @@ export const SERVICES = [
   {
     id: 'property-management',
     name: 'Property Management & Operations',
-    description: 'From tenant communication to maintenance coordination and real-time updates, we manage day-to-day operations so investors can scale remotely with confidence.',
+    description:
+      'Day-to-day ops live in one group chat. Maintenance, tenants, documented walkthroughs with photo and video, and reporting you can read without opening five tabs.',
     icon: 'Building2',
     features: [
       'Tenant communication',
@@ -121,7 +147,8 @@ export const SERVICES = [
   {
     id: 'commercial-property-support',
     name: 'Commercial Property Support',
-    description: 'Operational support for commercial property owners and investors: maintenance coordination, tenant issue management, and long-term property upkeep.',
+    description:
+      'Small commercial owners get the same visibility model as residential investors. Maintenance, tenant issues, and upkeep coordination with one Arkansas team accountable for follow-through.',
     icon: 'Store',
     features: [
       'Commercial property oversight',
@@ -131,6 +158,54 @@ export const SERVICES = [
       'Long-term property upkeep'
     ],
     category: 'commercial'
+  },
+  {
+    id: 'airbnb-str',
+    name: 'Airbnb & Short-Term Rental Operations',
+    description:
+      'Your STR needs turnovers, guest-ready standards, and fast issue response between bookings. We coordinate cleaning, restocking, maintenance, and owner updates in the same group chat you use for your long-term rentals.',
+    icon: 'Home',
+    features: [
+      'Guest turnover coordination',
+      'Listing readiness checks',
+      'Between-stay maintenance',
+      'Supply and restock coordination',
+      'Owner communication and reporting',
+      'Local vendor management'
+    ],
+    category: 'str'
+  },
+  {
+    id: 'hospitality-hotels',
+    name: 'Hospitality & Hotel Operations',
+    description:
+      'Boutique hotels and hospitality assets need facility care, vendor coordination, and steady oversight, not a residential manager learning on the job. We support operational needs with the same visible communication model we use for investors.',
+    icon: 'Hotel',
+    features: [
+      'Facility and grounds coordination',
+      'Vendor and contractor management',
+      'Preventative maintenance planning',
+      'Guest-area issue response',
+      'Operational reporting',
+      'Long-term asset upkeep'
+    ],
+    category: 'hospitality'
+  },
+  {
+    id: 'long-term-maintenance',
+    name: 'Long-Term Maintenance & Property Care',
+    description:
+      'Owners who self-manage or use another manager still need a reliable Arkansas crew for ongoing repairs, seasonal work, and property care. We handle the maintenance lane with photos from the field and clear approval paths.',
+    icon: 'Wrench',
+    features: [
+      'Ongoing repair coordination',
+      'Preventative maintenance visits',
+      'Seasonal property care',
+      'Vendor scheduling and oversight',
+      'Photo and video job updates',
+      'Portfolio maintenance planning'
+    ],
+    category: 'maintenance'
   }
 ];
 
@@ -172,32 +247,45 @@ export const TESTIMONIALS = [
 export const WHY_CHOOSE_US = [
   {
     icon: 'MapPin',
-    title: 'Local Boots on the Ground',
-    description: 'A team physically operating properties across Arkansas, not a remote call center.'
+    title: 'Local boots on the ground',
+    description: 'Operators physically on Arkansas properties, not a distant call center queue.'
   },
   {
     icon: 'MessageSquare',
-    title: '24/7 Communication',
-    description: 'Fast response times, group chats, and real-time updates so you always know what is happening.'
+    title: '24/7 communication',
+    description: 'Group chats and fast replies so you are never waiting until Monday for a photo from the job site.'
   },
   {
     icon: 'Camera',
-    title: 'Real-Time Updates',
-    description: 'Photos, videos, and active project communication from the field. No guessing required.'
+    title: 'Real-time field updates',
+    description: 'Photos and video from walkthroughs and repairs land in your thread. No guessing what happened last week.'
   },
   {
     icon: 'ClipboardCheck',
-    title: 'Section 8 Experience',
-    description: 'Hands-on experience preparing, coordinating, and maintaining Section 8 rental properties.'
+    title: 'Section 8 experience',
+    description: 'Inspection prep and local housing coordination for owners who run vouchers in Central Arkansas.'
   },
   {
     icon: 'Layers',
-    title: 'Full Operational Support',
-    description: 'From renovation and leasing to tenant communication and long-term management, all under one roof.'
+    title: 'Full operational support',
+    description: 'Acquisition support through renovation, leasing, and management with one team accountable for the handoffs.'
   },
   {
     icon: 'TrendingUp',
-    title: 'Investor-Focused Execution',
-    description: 'Every decision is made with rental performance, property value, and investor peace of mind in mind.'
+    title: 'Investor-focused execution',
+    description: 'Every decision ties back to rental performance, asset durability, and clarity for owners who invest from afar.'
   }
+];
+
+export const FOUNDERS = [
+  {
+    name: 'Jonathan Azbel',
+    role: 'Founder',
+    bio: 'Jonathan plans and oversees long-term property performance. He keeps sight of costs, priorities, and what the asset needs next quarter, not just this week. Investors work with him when they want a steady operator view on the portfolio.',
+  },
+  {
+    name: 'David Vilhovezky',
+    role: 'Founder',
+    bio: 'David runs on-the-ground operations, tenant coordination, and project delivery. He is the person in the group chat with photos from the hallway. Investors work with him when they want the job site in their pocket.',
+  },
 ];

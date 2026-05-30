@@ -1,14 +1,7 @@
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Linkedin, Youtube, type LucideIcon } from 'lucide-react';
-import { BUSINESS_INFO, SERVICES, SOCIAL_LINKS, type SocialPlatform } from '@/constants/business';
+import { BUSINESS_INFO, SERVICES } from '@/constants/business';
+import SocialLinks from '@/components/SocialLinks';
 import logo from '@/assets/logo-full.webp';
-
-const socialIconMap: Record<SocialPlatform, LucideIcon> = {
-  instagram: Instagram,
-  facebook: Facebook,
-  linkedin: Linkedin,
-  youtube: Youtube,
-};
 
 const SiteFooter = () => {
   const year = new Date().getFullYear();
@@ -24,8 +17,7 @@ const SiteFooter = () => {
               className="site-footer-logo mb-6"
             />
             <p className="text-sm leading-relaxed max-w-xs">
-              {BUSINESS_INFO.tagline}. Full operational support for Real Estate
-              investors across Central Arkansas.
+              {BUSINESS_INFO.methodologyLine} {BUSINESS_INFO.tagline}.
             </p>
           </div>
 
@@ -37,6 +29,7 @@ const SiteFooter = () => {
               {[
                 { to: '/', label: 'Home' },
                 { to: '/services', label: 'Services' },
+                { to: '/compare', label: 'Compare' },
                 { to: '/about', label: 'About' },
                 { to: '/projects', label: 'Projects' },
                 { to: '/faq', label: 'FAQ' },
@@ -75,25 +68,7 @@ const SiteFooter = () => {
               </li>
               <li>{BUSINESS_INFO.address}</li>
             </ul>
-            {SOCIAL_LINKS.length > 0 && (
-              <div className="footer-social" aria-label="Social media">
-                {SOCIAL_LINKS.map((social) => {
-                  const Icon = socialIconMap[social.id];
-                  return (
-                    <a
-                      key={social.id}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="footer-social-link"
-                      aria-label={`Follow us on ${social.label}`}
-                    >
-                      <Icon className="h-4 w-4" aria-hidden="true" />
-                    </a>
-                  );
-                })}
-              </div>
-            )}
+            <SocialLinks variant="footer" />
           </div>
         </div>
 

@@ -1,5 +1,6 @@
 import SiteLayout from '@/components/SiteLayout';
 import Hero from '@/components/Hero';
+import RegionalComparisonTeaser from '@/components/RegionalComparisonTeaser';
 import ServicesShowcase from '@/components/ServicesShowcase';
 import OperationsProcess from '@/components/OperationsProcess';
 import WhyChooseUs from '@/components/WhyChooseUs';
@@ -14,6 +15,7 @@ const Home = () => (
     <ServicesShowcase />
     <OperationsProcess />
     <WhyChooseUs />
+    <RegionalComparisonTeaser />
     <CoverageSection />
     <Testimonials />
     <section className="section-pad band-muted border-y border-border">

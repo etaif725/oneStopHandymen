@@ -28,10 +28,12 @@ export interface FaqSectionProps {
   grouped?: boolean;
   className?: string;
   jsonLdId?: string;
+  /** Smaller in-page heading (e.g. contact sidebar) vs full display-lg */
+  headingSize?: 'display' | 'section';
 }
 
-const FaqList = ({ items }: { items: FaqItem[] }) => (
-  <dl className="space-y-6">
+const FaqList = ({ items, compact }: { items: FaqItem[]; compact?: boolean }) => (
+  <dl className={compact ? 'space-y-5' : 'space-y-6'}>
     {items.map((item) => (
       <div key={item.id}>
         <dt className="font-medium text-foreground mb-1">{item.question}</dt>
@@ -74,6 +76,7 @@ const FaqSection = ({
   grouped = false,
   className,
   jsonLdId,
+  headingSize = 'display',
 }: FaqSectionProps) => {
   const items = getFaqs({ ids, categories, limit });
 
@@ -86,14 +89,31 @@ const FaqSection = ({
       {includeJsonLd && <FaqJsonLd items={items} id={jsonLdId} />}
 
       {(eyebrow || title || description) && (
-        <div className="mb-10 max-w-2xl">
+        <div
+          className={cn(
+            'max-w-2xl',
+            headingSize === 'section' ? 'mb-6' : 'mb-10',
+          )}
+        >
           {eyebrow && <p className="section-label">{eyebrow}</p>}
           {title && (
-            <h2 id="faq-section-title" className="display-lg text-balance">
+            <h2
+              id="faq-section-title"
+              className={cn(
+                'text-balance',
+                headingSize === 'section'
+                  ? 'text-xl font-semibold tracking-tight text-foreground'
+                  : 'display-lg',
+              )}
+            >
               {title}
             </h2>
           )}
-          {description && <p className="lead mt-4">{description}</p>}
+          {description && (
+            <p className={cn(headingSize === 'section' ? 'text-sm text-muted-foreground mt-2 leading-relaxed' : 'lead mt-4')}>
+              {description}
+            </p>
+          )}
         </div>
       )}
 
@@ -109,7 +129,7 @@ const FaqSection = ({
           ))}
         </div>
       ) : variant === 'list' ? (
-        <FaqList items={items} />
+        <FaqList items={items} compact={headingSize === 'section'} />
       ) : (
         <FaqAccordion items={items} />
       )}

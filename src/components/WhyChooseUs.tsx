@@ -1,4 +1,5 @@
 import { WHY_CHOOSE_US } from '@/constants/business';
+import { STORY } from '@/constants/copy';
 import { getIcon } from '@/components/layout/iconMap';
 
 const WhyChooseUs = () => {
@@ -7,20 +8,16 @@ const WhyChooseUs = () => {
       <div className="site-container">
         <div className="grid lg:grid-cols-2 gap-16 items-start">
           <div>
-            <p className="section-label">Why One Stop</p>
-            <h2 className="display-lg text-balance mb-6">
-              Not a 9-to-5 management company
-            </h2>
-            <blockquote className="border-l-4 border-accent pl-6 mb-8">
-              <p className="text-lg leading-relaxed text-foreground italic">
-                "Most investors are tired of poor communication and management companies
-                that disappear after business hours. We built this differently."
-              </p>
-            </blockquote>
-            <p className="lead">
-              For remote investors, communication is everything. We operate as a modern
-              boots-on-the-ground partner with real-time updates from the field.
-            </p>
+            <p className="section-label">{STORY.whyEyebrow}</p>
+            <h2 className="display-lg text-balance mb-6">{STORY.whyTitle}</h2>
+            <div className="space-y-4 mb-8">
+              {STORY.whyParagraphs.map((paragraph) => (
+                <p key={paragraph.slice(0, 32)} className="text-muted-foreground leading-relaxed">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+            <p className="lead">{STORY.whyLead}</p>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-x-8 gap-y-10">

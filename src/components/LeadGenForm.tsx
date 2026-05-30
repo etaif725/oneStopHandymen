@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,17 +11,32 @@ import { CheckCircle2, Send, Phone, Mail, Calendar, Clock, Tag } from 'lucide-re
 import { useToast } from '@/hooks/use-toast';
 import { contactFormSchema, type ContactFormData } from '@/schemas/contactFormSchema';
 import { SERVICES } from '@/constants/business';
+import { contactFormPrefillFromSearchParams } from '@/lib/contactFormPrefill';
+import { cn } from '@/lib/utils';
 
 interface LeadGenFormProps {
-  variant?: 'default' | 'compact';
+  variant?: 'default' | 'compact' | 'contact';
 }
 
 const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
+  const isContactPage = variant === 'contact';
+  const fieldLabelClass = isContactPage ? 'text-sm font-semibold' : 'text-base font-semibold';
+  const fieldInputClass = (hasError: boolean) =>
+    cn(
+      isContactPage ? 'h-11 text-sm' : 'h-12 text-base',
+      hasError ? 'border-destructive' : 'border-border/50 focus:border-primary',
+    );
+  const fieldSelectClass = (hasError: boolean) =>
+    cn(
+      isContactPage ? 'h-11 text-sm' : 'h-12 text-base',
+      hasError ? 'border-destructive' : 'border-border/50 focus:border-primary',
+    );
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const promoCode = searchParams.get('promo');
-  const serviceFromPromo = searchParams.get('service');
-  
+  const serviceFromUrl = searchParams.get('service');
+  const prefillAppliedRef = useRef('');
+
   const [formData, setFormData] = useState<Partial<ContactFormData>>({
     name: '',
     email: '',
@@ -36,23 +51,35 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Auto-populate form when coming from promo bar
+  // Pre-fill service + property type from contact CTAs (?serviceId= / ?service=)
   useEffect(() => {
-    if (promoCode && serviceFromPromo) {
+    const paramKey = searchParams.toString();
+    if (!paramKey || prefillAppliedRef.current === paramKey) return;
+
+    const prefill = contactFormPrefillFromSearchParams(searchParams);
+
+    if (promoCode && serviceFromUrl) {
+      prefillAppliedRef.current = paramKey;
       setPromoCodeValue(promoCode);
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        serviceNeeded: [serviceFromPromo],
-        description: `I'm interested in the ${promoCode} promotion for ${serviceFromPromo}.`,
+        serviceNeeded: prefill?.serviceNeeded ?? [decodeURIComponent(serviceFromUrl)],
+        propertyType: prefill?.propertyType ?? prev.propertyType,
+        description: `I'm interested in the ${promoCode} promotion for ${decodeURIComponent(serviceFromUrl)}.`,
       }));
-      
-      // Show success toast
-      toast({
-        title: 'Promo Code Applied',
-        description: `${promoCode} has been applied to your quote request.`,
-      });
+      return;
     }
-  }, [promoCode, serviceFromPromo, toast]);
+
+    if (!prefill) return;
+
+    prefillAppliedRef.current = paramKey;
+    setFormData((prev) => ({
+      ...prev,
+      serviceNeeded: prefill.serviceNeeded,
+      propertyType: prefill.propertyType,
+      ...(prefill.description ? { description: prefill.description } : {}),
+    }));
+  }, [promoCode, serviceFromUrl, searchParams]);
 
   const services = [...SERVICES.map((s) => s.name), 'Other'];
 
@@ -455,18 +482,22 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
     );
   }
 
-  // Default variant - for Contact page (extensive form)
+  // Default / contact — full contact page form
+  if (variant === 'default' || variant === 'contact') {
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form
+      onSubmit={handleSubmit}
+      className={cn(isContactPage ? 'space-y-6' : 'space-y-8')}
+    >
       {/* Name & Email */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className={cn('grid md:grid-cols-2', isContactPage ? 'gap-5' : 'gap-6')}>
         <div className="space-y-2">
-          <Label htmlFor="name" className="text-base font-semibold">Full Name *</Label>
+          <Label htmlFor="name" className={fieldLabelClass}>Full Name *</Label>
           <Input
             id="name"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className={`h-12 text-base ${errors.name ? 'border-destructive' : 'border-border/50 focus:border-primary'}`}
+            className={fieldInputClass(!!errors.name)}
             placeholder="John Doe"
           />
           {errors.name && (
@@ -476,13 +507,13 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-base font-semibold">Email Address *</Label>
+          <Label htmlFor="email" className={fieldLabelClass}>Email Address *</Label>
           <Input
             id="email"
             type="email"
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            className={`h-12 text-base ${errors.email ? 'border-destructive' : 'border-border/50 focus:border-primary'}`}
+            className={fieldInputClass(!!errors.email)}
             placeholder="john@example.com"
           />
           {errors.email && (
@@ -494,16 +525,16 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
       </div>
 
       {/* Phone & Property Type */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className={cn('grid md:grid-cols-2', isContactPage ? 'gap-5' : 'gap-6')}>
         <div className="space-y-2">
-          <Label htmlFor="phone" className="text-base font-semibold">Phone Number *</Label>
+          <Label htmlFor="phone" className={fieldLabelClass}>Phone Number *</Label>
           <Input
             id="phone"
             type="tel"
             value={formData.phone}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
             placeholder="(501) 737-0930"
-            className={`h-12 text-base ${errors.phone ? 'border-destructive' : 'border-border/50 focus:border-primary'}`}
+            className={fieldInputClass(!!errors.phone)}
           />
           {errors.phone && (
             <p className="text-destructive text-sm mt-1 flex items-center gap-1">
@@ -512,12 +543,12 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="propertyType" className="text-base font-semibold">Property Type *</Label>
+          <Label htmlFor="propertyType" className={fieldLabelClass}>Property Type *</Label>
           <Select
             value={formData.propertyType || ''}
             onValueChange={(value: any) => setFormData({ ...formData, propertyType: value })}
           >
-            <SelectTrigger className={`h-12 text-base ${errors.propertyType ? 'border-destructive' : 'border-border/50 focus:border-primary'}`}>
+            <SelectTrigger className={fieldSelectClass(!!errors.propertyType)}>
               <SelectValue placeholder="Select property type" />
             </SelectTrigger>
             <SelectContent>
@@ -537,12 +568,12 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
 
       {/* Service Needed */}
       <div className="space-y-2">
-        <Label htmlFor="serviceNeeded" className="text-base font-semibold">Service Needed *</Label>
+        <Label htmlFor="serviceNeeded" className={fieldLabelClass}>Service Needed *</Label>
         <Select
           value={formData.serviceNeeded?.[0] || ''}
           onValueChange={(value) => setFormData({ ...formData, serviceNeeded: [value] })}
         >
-          <SelectTrigger className={`h-12 text-base ${errors.serviceNeeded ? 'border-destructive' : 'border-border/50 focus:border-primary'}`}>
+          <SelectTrigger className={fieldSelectClass(!!errors.serviceNeeded)}>
             <SelectValue placeholder="Select service" />
           </SelectTrigger>
           <SelectContent>
@@ -581,7 +612,12 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
       )}
 
       {/* Consent Checkboxes */}
-      <div className="space-y-4 p-6 bg-muted/30 rounded-xl border border-border/50">
+      <div
+        className={cn(
+          'space-y-4 bg-muted/30 rounded-xl border border-border/50',
+          isContactPage ? 'p-5' : 'p-6',
+        )}
+      >
         <div className="flex items-start space-x-3">
           <Checkbox
             id="privacy-consent"
@@ -623,11 +659,14 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
       </div>
 
       {/* Submit Button */}
-      <div className="pt-4">
+      <div className={isContactPage ? 'pt-2' : 'pt-4'}>
         <Button
           type="submit"
           size="lg"
-          className="w-full btn-primary h-auto py-4 text-base"
+          className={cn(
+            'w-full btn-primary h-auto text-base',
+            isContactPage ? 'py-3.5' : 'py-4',
+          )}
           disabled={isSubmitting}
         >
           {isSubmitting ? (
@@ -638,17 +677,20 @@ const LeadGenForm = ({ variant = 'default' }: LeadGenFormProps) => {
           ) : (
             <>
               Send Message
-              <Send className="ml-2 h-6 w-6" />
+              <Send className={cn('ml-2', isContactPage ? 'h-5 w-5' : 'h-6 w-6')} />
             </>
           )}
         </Button>
-        <p className="text-center text-muted-foreground text-sm mt-4">
+        <p className="text-center text-muted-foreground text-sm mt-3">
           <CheckCircle2 className="inline h-4 w-4 mr-1" />
           We typically respond within 1 hour during business hours
         </p>
       </div>
     </form>
   );
+  }
+
+  return null;
 };
 
 export default LeadGenForm;

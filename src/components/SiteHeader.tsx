@@ -6,6 +6,7 @@ import logo from '@/assets/logo-main.webp';
 const navLinks = [
   { to: '/', label: 'Home' },
   { to: '/services', label: 'Services' },
+  { to: '/compare', label: 'Compare' },
   { to: '/about', label: 'About' },
   { to: '/projects', label: 'Projects' },
   { to: '/faq', label: 'FAQ' },

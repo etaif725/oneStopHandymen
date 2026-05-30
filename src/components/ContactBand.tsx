@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { Phone, Mail } from 'lucide-react';
+import { Phone } from 'lucide-react';
 import { BUSINESS_INFO } from '@/constants/business';
+import { CONTACT_COPY } from '@/constants/copy';
 
 const ContactBand = () => {
   return (
@@ -10,12 +11,9 @@ const ContactBand = () => {
           <div>
             <p className="section-label section-label-light">Ready to start?</p>
             <h2 className="display-lg text-white text-balance mb-4">
-              Put a local team on the ground in Arkansas
+              {CONTACT_COPY.bandTitle}
             </h2>
-            <p className="lead lead-light max-w-lg">
-              Schedule a call to discuss your properties, portfolio goals, and how we
-              can support your next move in Central Arkansas.
-            </p>
+            <p className="lead lead-light max-w-lg">{CONTACT_COPY.bandLead}</p>
           </div>
           <div className="flex flex-col sm:flex-row lg:flex-col gap-4 lg:items-end">
             <Link to="/contact" className="btn-primary w-full sm:w-auto lg:w-full text-center justify-center">

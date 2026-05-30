@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import LeadGenForm from '@/components/LeadGenForm';
+import HeroReviewStrip from '@/components/HeroReviewStrip';
+import HeroScrollHint from '@/components/HeroScrollHint';
 import { BUSINESS_INFO } from '@/constants/business';
+import { HERO } from '@/constants/copy';
 import heroImage from '@/assets/hero-background.webp';
 
 const Hero = () => {
@@ -9,18 +12,19 @@ const Hero = () => {
     <section className="hero-wrap">
       <div className="hero-editorial">
         <div className="hero-copy">
-          <div className="max-w-xl">
-            <p className="section-label section-label-light">
-              Investor Operations · Central Arkansas
-            </p>
-            <h1 className="display-xl text-balance text-white mb-6">
+          <div className="hero-copy-inner">
+            <p className="section-label section-label-light">{HERO.eyebrow}</p>
+            <p className="hero-methodology-line">{HERO.methodologyLine}</p>
+            <h1 className="display-xl text-balance text-white hero-title">
               {BUSINESS_INFO.tagline}
             </h1>
-            <p className="lead lead-light text-balance mb-8 max-w-lg">
-              Full operational support for Real Estate investors. Deal evaluation,
-              Section 8 coordination, leasing, renovations, and property management
-              under one local team.
-            </p>
+            <div className="hero-copy-body">
+              {HERO.paragraphs.map((paragraph) => (
+                <p key={paragraph.slice(0, 32)} className="lead lead-light">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
             <div className="flex flex-wrap gap-3">
               <a href="#get-started" className="btn-primary">
                 Schedule a Call
@@ -32,23 +36,15 @@ const Hero = () => {
             </div>
 
             <div className="hero-stat-grid">
-              <div>
-                <div className="hero-stat-value">24/7</div>
-                <div className="hero-stat-label">Communication</div>
-              </div>
-              <div>
-                <div className="hero-stat-value">6</div>
-                <div className="hero-stat-label">Years of Hand-on Experience</div>
-              </div>
-              <div>
-                <div className="hero-stat-value">9</div>
-                <div className="hero-stat-label">Service Areas</div>
-              </div>
-              <div>
-                <div className="hero-stat-value">{BUSINESS_INFO.established}</div>
-                <div className="hero-stat-label">Established</div>
-              </div>
+              {HERO.stats.map((stat) => (
+                <div key={stat.label}>
+                  <div className="hero-stat-value">{stat.value}</div>
+                  <div className="hero-stat-label">{stat.label}</div>
+                </div>
+              ))}
             </div>
+
+            <HeroReviewStrip />
           </div>
         </div>
 
@@ -56,6 +52,8 @@ const Hero = () => {
           <img src={heroImage} alt="Arkansas property operations" loading="eager" />
           <div className="hero-visual-overlay" />
         </div>
+
+        <HeroScrollHint />
       </div>
 
       <div className="split-band band-muted" id="get-started">
@@ -63,12 +61,9 @@ const Hero = () => {
           <div className="max-w-md">
             <p className="section-label section-label-light">Get Started</p>
             <h2 className="display-lg text-white mb-4 text-balance">
-              Tell us about your portfolio
+              {HERO.getStartedTitle}
             </h2>
-            <p className="lead lead-light mb-6">
-              Whether you are evaluating your first Arkansas deal or scaling an existing
-              portfolio, our team responds quickly with a clear operational plan.
-            </p>
+            <p className="lead lead-light mb-6">{HERO.getStartedLead}</p>
             <ul className="space-y-3 text-sm text-white/70">
               <li className="flex gap-2">
                 <span className="text-accent">+</span> Response within one hour
