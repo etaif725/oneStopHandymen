@@ -13,7 +13,7 @@ export const META = {
 
 export const HERO = {
   eyebrow: 'Investor Operations · Central Arkansas',
-  methodologyLine: `${BUSINESS_INFO.name}. Powered by boots-on-the-ground ops.`,
+  methodologyLine: ``,
   paragraphs: [
     'You bought a rental in Little Rock from five miles away or from fifteen hundred. Then the updates slowed down. The portal showed numbers. You still did not know what was happening inside the house.',
     'Most property managers in this market hand you a login and go quiet after business hours. We built One Stop around the opposite. You get a group chat, photos and video from the job site, and one team that stays in the thread.',
@@ -343,6 +343,10 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
 export const PROJECTS_COPY = {
   bannerDescription:
     'Sample work types we run for investors across Central Arkansas. Each story below reflects a common path owners take with us.',
+  galleryEyebrow: 'Gallery',
+  galleryTitle: 'More transformations',
+  galleryDescription:
+    'Drag the handle on any photo to compare before and after. These are recent jobs across our Central Arkansas portfolio.',
   projects: [
     {
       title: 'Rent-Ready Renovation',

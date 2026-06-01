@@ -1,14 +1,15 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import PageShell from '@/components/layout/PageShell';
+import BeforeAfterSlider from '@/components/BeforeAfterSlider';
 import { PROJECTS_COPY } from '@/constants/copy';
+import { PROJECT_GALLERY, getProjectPair } from '@/lib/projectGallery';
 
-const projectImages = [
-  'https://images.pexels.com/photos/2062426/pexels-photo-2062426.jpeg?auto=compress&cs=tinysrgb&w=800&h=500&fit=crop',
-  'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800&h=500&fit=crop',
-  'https://images.pexels.com/photos/280222/pexels-photo-280222.jpeg?auto=compress&cs=tinysrgb&w=800&h=500&fit=crop',
-  'https://images.pexels.com/photos/416320/pexels-photo-416320.jpeg?auto=compress&cs=tinysrgb&w=800&h=500&fit=crop',
-];
+const featuredPairs = PROJECTS_COPY.projects.map((_, index) => getProjectPair(index + 1)).filter(
+  (pair): pair is NonNullable<typeof pair> => pair !== undefined,
+);
+
+const galleryPairs = PROJECT_GALLERY.filter((pair) => pair.id > PROJECTS_COPY.projects.length);
 
 const Projects = () => (
   <PageShell
@@ -19,32 +20,65 @@ const Projects = () => (
       breadcrumb: [{ label: 'Home', to: '/' }, { label: 'Projects' }],
     }}
   >
-    <section className="section-pad">
+    <section className="section-pad border-b border-border">
       <div className="site-container">
         <div className="grid sm:grid-cols-2 gap-8">
-          {PROJECTS_COPY.projects.map((p, i) => (
-            <figure key={p.title} className="group">
-              <div className="overflow-hidden border border-border mb-4">
-                <img
-                  src={projectImages[i]}
-                  alt={p.title}
-                  className="w-full aspect-[16/10] object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+          {PROJECTS_COPY.projects.map((project, index) => {
+            const pair = featuredPairs[index] ?? getProjectPair(index + 1);
+            if (!pair) return null;
+
+            return (
+              <figure key={project.title}>
+                <BeforeAfterSlider
+                  beforeSrc={pair.before}
+                  afterSrc={pair.after}
+                  beforeAlt={`${project.title} before renovation`}
+                  afterAlt={`${project.title} after renovation`}
+                  className="mb-4"
                 />
-              </div>
-              <figcaption>
-                <span className="text-xs uppercase tracking-widest text-accent">{p.tag}</span>
-                <p className="font-semibold mt-1 mb-2">{p.title}</p>
-                <p className="text-sm text-muted-foreground leading-relaxed">{p.story}</p>
-              </figcaption>
-            </figure>
-          ))}
+                <figcaption>
+                  <span className="text-xs uppercase tracking-widest text-accent">{project.tag}</span>
+                  <p className="font-semibold mt-1 mb-2">{project.title}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{project.story}</p>
+                </figcaption>
+              </figure>
+            );
+          })}
         </div>
-        <div className="mt-16 text-center">
-          <Link to="/contact" className="btn-primary">
-            Discuss your project
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+      </div>
+    </section>
+
+    {galleryPairs.length > 0 && (
+      <section className="section-pad band-muted border-b border-border">
+        <div className="site-container">
+          <p className="section-label">{PROJECTS_COPY.galleryEyebrow}</p>
+          <h2 className="display-lg text-balance mb-4 max-w-2xl">{PROJECTS_COPY.galleryTitle}</h2>
+          <p className="lead max-w-3xl mb-10">{PROJECTS_COPY.galleryDescription}</p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {galleryPairs.map((pair) => (
+              <figure key={pair.id}>
+                <BeforeAfterSlider
+                  beforeSrc={pair.before}
+                  afterSrc={pair.after}
+                  beforeAlt={`Project ${pair.id} before renovation`}
+                  afterAlt={`Project ${pair.id} after renovation`}
+                />
+                <figcaption className="mt-3 text-xs uppercase tracking-widest text-muted-foreground">
+                  Project {String(pair.id).padStart(2, '0')}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
         </div>
+      </section>
+    )}
+
+    <section className="section-pad">
+      <div className="site-container text-center">
+        <Link to="/contact" className="btn-primary">
+          Discuss your project
+          <ArrowRight className="h-4 w-4" />
+        </Link>
       </div>
     </section>
   </PageShell>

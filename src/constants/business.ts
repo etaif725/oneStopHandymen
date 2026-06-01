@@ -8,7 +8,7 @@ export const BUSINESS_INFO = {
   name: "One Stop Property Solutions",
   methodologyName: "Boots on Ground Ops",
   tagline: "Your Boots on the Ground in Arkansas",
-  methodologyLine: "One Stop Property Solutions. Powered by boots-on-the-ground ops.",
+  methodologyLine: "",
   phone: "(501) 737-0930",
   email: "info@onestoppropertyar.com",
   address: "Little Rock, AR",

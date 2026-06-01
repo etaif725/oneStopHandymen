@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import logo from '@/assets/logo-main.webp';
@@ -16,6 +16,19 @@ const navLinks = [
 const SiteHeader = () => {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
 
   return (
     <header className="site-header">
@@ -58,22 +71,30 @@ const SiteHeader = () => {
       </div>
 
       {open && (
-        <div className="lg:hidden band-dark border-t border-white/10 px-6 py-6 space-y-4">
-          {navLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className="block site-nav-link"
-              data-active={pathname === link.to ? 'true' : undefined}
-              onClick={() => setOpen(false)}
-            >
-              {link.label}
+        <>
+          <button
+            type="button"
+            className="site-header-mobile-backdrop lg:hidden"
+            aria-label="Close menu"
+            onClick={() => setOpen(false)}
+          />
+          <nav className="site-header-mobile-nav lg:hidden" aria-label="Main">
+            {navLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="block site-nav-link"
+                data-active={pathname === link.to ? 'true' : undefined}
+                onClick={() => setOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <Link to="/contact" className="btn-primary w-full text-center mt-4" onClick={() => setOpen(false)}>
+              Schedule a Call
             </Link>
-          ))}
-          <Link to="/contact" className="btn-primary w-full text-center mt-4" onClick={() => setOpen(false)}>
-            Schedule a Call
-          </Link>
-        </div>
+          </nav>
+        </>
       )}
     </header>
   );

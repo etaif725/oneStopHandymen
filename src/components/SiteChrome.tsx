@@ -3,7 +3,7 @@ import SiteHeader from '@/components/SiteHeader';
 
 const SiteChrome = () => (
   <div className="site-chrome">
-    <PromoBar />
+    {/*<PromoBar />*/}
     <SiteHeader />
   </div>
 );
