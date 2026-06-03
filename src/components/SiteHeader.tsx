@@ -21,6 +21,7 @@ const SiteHeader = () => {
     setOpen(false);
   }, [pathname]);
 
+
   useEffect(() => {
     if (!open) return;
     const previousOverflow = document.body.style.overflow;

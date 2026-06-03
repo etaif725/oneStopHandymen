@@ -63,13 +63,9 @@ export function contactFormPrefillFromSearchParams(
     parsePropertyType(params.get('propertyType')) ??
     propertyTypeForServiceCategory(service.category);
 
-  const promo = params.get('promo');
-
   return {
     serviceNeeded: [service.name],
     propertyType,
-    description: promo
-      ? undefined
-      : `I'd like to discuss ${service.name}.`,
+    description: `I'd like to discuss ${service.name}.`,
   };
 }
