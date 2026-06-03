@@ -4,11 +4,11 @@ import PageShell from '@/components/layout/PageShell';
 import { BUSINESS_INFO, FOUNDERS } from '@/constants/business';
 import { ABOUT_COPY } from '@/constants/copy';
 import SocialLinks from '@/components/SocialLinks';
-import yonatan from '@/assets/yonatan-2.webp';
+import jonathan from '@/assets/jonathan-2.webp';
 import david from '@/assets/david-2.webp';
 
 const founderImages: Record<string, string> = {
-  'Jonathan Azbel': yonatan,
+  'Jonathan Azbel': jonathan,
   'David Vilhovezky': david,
 };
 
