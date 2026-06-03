@@ -4,8 +4,8 @@ import PageShell from '@/components/layout/PageShell';
 import { BUSINESS_INFO, FOUNDERS } from '@/constants/business';
 import { ABOUT_COPY } from '@/constants/copy';
 import SocialLinks from '@/components/SocialLinks';
-import yonatan from '@/assets/yonatan.webp';
-import david from '@/assets/david.webp';
+import yonatan from '@/assets/yonatan-2.webp';
+import david from '@/assets/david-2.webp';
 
 const founderImages: Record<string, string> = {
   'Jonathan Azbel': yonatan,
